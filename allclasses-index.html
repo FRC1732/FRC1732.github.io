@@ -61,57 +61,37 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/arm/AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
-<div class="block">The public API for an arm, and the control logic shared by its implementations.</div>
+<div class="block">Shared position-control implementation for real and simulated arms.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/elevator/AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">The public API for an elevator, and the control logic shared by its implementations.</div>
+<div class="block">Shared position-control implementation for real and simulated elevators.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/arm/ArmConstants.html" title="class in frc.robot.subsystems.arm">ArmConstants</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/arm/ArmSubsystem.html" title="class in frc.robot.subsystems.arm">ArmSubsystem</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
-<div class="block">The physical description of one arm, supplied to the IO that models or drives it.</div>
+<div class="block">Arm subsystem backed by a REV Spark Max and CTRE CANcoder.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/arm/ArmSubsystem.html" title="class in frc.robot.subsystems.arm">ArmSubsystem</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">The arm implementation robot teams instantiate against real hardware.</div>
-</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="frc/robot/Constants.html" title="interface in frc.robot">Constants</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
-<div class="block">Robot-wide constants.</div>
-</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="frc/robot/Constants.HardwareDefaults.html" title="interface in frc.robot">Constants.HardwareDefaults</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
-<div class="block">Starting gains for the library's real-hardware subsystems.</div>
-</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="frc/robot/Constants.SimDefaults.html" title="interface in frc.robot">Constants.SimDefaults</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
-<div class="block">Gains the library's shipped simulations start from.</div>
-</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/elevator/ElevatorConstants.html" title="class in frc.robot.subsystems.elevator">ElevatorConstants</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">The physical description of one elevator, supplied to the IO that models or drives it.</div>
-</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="frc/robot/Constants.html" title="interface in frc.robot">Constants</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/elevator/ElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">ElevatorSubsystem</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
-<div class="block">The elevator implementation robot teams instantiate against real hardware.</div>
+<div class="block">Elevator subsystem backed by a leader/follower pair of motor controllers.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/Library.html" title="class in frc.robot">Library</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/arm/SimArmSubsystem.html" title="class in frc.robot.subsystems.arm">SimArmSubsystem</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/MotorControllerGroup.html" title="class in frc.robot">MotorControllerGroup</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/arm/SimArmSubsystem.html" title="class in frc.robot.subsystems.arm">SimArmSubsystem</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Arm subsystem backed by WPILib's <code>SingleJointedArmSim</code>.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/elevator/SimElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">SimElevatorSubsystem</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
-<div class="block">The arm implementation used in simulation, test runs, and CI.</div>
+<div class="block">Elevator subsystem backed by WPILib's <code>ElevatorSim</code>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/elevator/SimElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">SimElevatorSubsystem</a></div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/SimulationMotorController.html" title="class in frc.robot">SimulationMotorController</a>&lt;<a href="frc/robot/SimulationMotorController.html" title="type parameter in SimulationMotorController">T</a>&gt;</div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">The elevator implementation used in simulation, test runs, and CI.</div>
-</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="frc/robot/subsystems/Subsystem.html" title="interface in frc.robot.subsystems">Subsystem</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
-<div class="block">The contract every mechanism in this library exposes to robot code.</div>
-</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="frc/robot/subsystems/SubsystemBase.html" title="class in frc.robot.subsystems">SubsystemBase</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">Base class for the concrete mechanism implementations in this library.</div>
+<div class="block">Adapts a simulation model to WPILib's <code>MotorController</code> interface.</div>
 </div>
 </div>
 </div>

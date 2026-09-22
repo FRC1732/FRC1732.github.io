@@ -40,7 +40,7 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Package:&nbsp;</li>
 <li>Description&nbsp;|&nbsp;</li>
-<li><a href="#related-package-summary">Related Packages</a>&nbsp;|&nbsp;</li>
+<li>Related Packages&nbsp;|&nbsp;</li>
 <li><a href="#class-summary">Classes and Interfaces</a></li>
 </ul>
 </div>
@@ -62,19 +62,6 @@ loadScripts(document, 'script');</script>
 <section class="summary">
 <ul class="summary-list">
 <li>
-<div id="related-package-summary">
-<div class="caption"><span>Related Packages</span></div>
-<div class="summary-table two-column-summary">
-<div class="table-header col-first">Package</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><a href="../package-summary.html">frc.robot.subsystems</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="../arm/package-summary.html">frc.robot.subsystems.arm</a></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-</div>
-</div>
-</li>
-<li>
 <div id="class-summary">
 <div class="caption"><span>Classes</span></div>
 <div class="summary-table two-column-summary">
@@ -82,19 +69,15 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">The public API for an elevator, and the control logic shared by its implementations.</div>
+<div class="block">Shared position-control implementation for real and simulated elevators.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ElevatorConstants.html" title="class in frc.robot.subsystems.elevator">ElevatorConstants</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">ElevatorSubsystem</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">The physical description of one elevator, supplied to the IO that models or drives it.</div>
+<div class="block">Elevator subsystem backed by a leader/follower pair of motor controllers.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="ElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">ElevatorSubsystem</a></div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SimElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">SimElevatorSubsystem</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">The elevator implementation robot teams instantiate against real hardware.</div>
-</div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SimElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">SimElevatorSubsystem</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">The elevator implementation used in simulation, test runs, and CI.</div>
+<div class="block">Elevator subsystem backed by WPILib's <code>ElevatorSim</code>.</div>
 </div>
 </div>
 </div>

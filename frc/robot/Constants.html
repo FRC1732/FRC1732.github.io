@@ -39,14 +39,14 @@ loadScripts(document, 'script');</script>
 <div>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
-<li><a href="#nested-class-summary">Nested</a>&nbsp;|&nbsp;</li>
-<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li>Method</li>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li>Method</li>
 </ul>
@@ -69,122 +69,6 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">Constants</span></div>
-<div class="block">Robot-wide constants.
-
- <p>Deliberately free of hardware detail. CAN IDs, gear ratios, and PID gains are properties of
- <em>one robot</em>, and this is a library that ships to many. Putting them here would mean every
- team edits library source to configure their robot, which is exactly what this library is built
- to avoid.
-
- <h2>Where hardware configuration belongs instead</h2>
-
- <ul>
-   <li><b>A mechanism's physical description</b> — mass, gearing, travel limits, motor model —
-       goes into that mechanism's constants class, which the team constructs and passes in:
-       <a href="subsystems/arm/ArmConstants.html" title="class in frc.robot.subsystems.arm"><code>ArmConstants</code></a>,
-       <a href="subsystems/elevator/ElevatorConstants.html" title="class in frc.robot.subsystems.elevator"><code>ElevatorConstants</code></a>.
-   <li><b>Wiring</b> — CAN IDs, limit switch channels, inversion — belongs in the team's own
-       <code>frc.robot.Constants</code> and is passed to the mechanism's constructor. Neither
-       <a href="subsystems/arm/ArmSubsystem.html" title="class in frc.robot.subsystems.arm"><code>ArmSubsystem</code></a> nor
-       <a href="subsystems/elevator/ElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator"><code>ElevatorSubsystem</code></a> reads a hardware ID from anywhere but its
-       own arguments.
-   <li><b>PID gains</b> — belong to the subsystem that owns the motor controller. The real
-       <code>ArmSubsystem</code> and <code>ElevatorSubsystem</code> carry their starting gains in
-       <a href="Constants.HardwareDefaults.html" title="interface in frc.robot"><code>Constants.HardwareDefaults</code></a>, and the two simulations in <a href="Constants.SimDefaults.html" title="interface in frc.robot"><code>Constants.SimDefaults</code></a>, precisely because those
-       classes <em>are</em> the thing owning the control loop.
- </ul>
-
- <p>This type is kept as the natural home for genuinely robot-wide, hardware-free values.</div>
-</section>
-<section class="summary">
-<ul class="summary-list">
-<!-- ======== NESTED CLASS SUMMARY ======== -->
-<li>
-<section class="nested-class-summary" id="nested-class-summary">
-<h2>Nested Class Summary</h2>
-<div class="caption"><span>Nested Classes</span></div>
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier and Type</div>
-<div class="table-header col-second">Interface</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="Constants.HardwareDefaults.html" class="type-name-link" title="interface in frc.robot">Constants.HardwareDefaults</a></code></div>
-<div class="col-last even-row-color">
-<div class="block">Starting gains for the library's real-hardware subsystems.</div>
-</div>
-<div class="col-first odd-row-color"><code>static interface&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="Constants.SimDefaults.html" class="type-name-link" title="interface in frc.robot">Constants.SimDefaults</a></code></div>
-<div class="col-last odd-row-color">
-<div class="block">Gains the library's shipped simulations start from.</div>
-</div>
-</div>
-</section>
-</li>
-<!-- =========== FIELD SUMMARY =========== -->
-<li>
-<section class="field-summary" id="field-summary">
-<h2>Field Summary</h2>
-<div class="caption"><span>Fields</span></div>
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier and Type</div>
-<div class="table-header col-second">Field</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static final double</code></div>
-<div class="col-second even-row-color"><code><a href="#LOOP_PERIOD_SECONDS" class="member-name-link">LOOP_PERIOD_SECONDS</a></code></div>
-<div class="col-last even-row-color">
-<div class="block">The nominal robot control-loop period in seconds, matching WPILib's 50&nbsp;Hz loop.</div>
-</div>
-<div class="col-first odd-row-color"><code>static final double</code></div>
-<div class="col-second odd-row-color"><code><a href="#NOMINAL_BATTERY_VOLTS" class="member-name-link">NOMINAL_BATTERY_VOLTS</a></code></div>
-<div class="col-last odd-row-color">
-<div class="block">The nominal battery voltage in volts, used to clamp motor outputs.</div>
-</div>
-</div>
-</section>
-</li>
-</ul>
-</section>
-<section class="details">
-<ul class="details-list">
-<!-- ============ FIELD DETAIL =========== -->
-<li>
-<section class="field-details" id="field-detail">
-<h2>Field Details</h2>
-<ul class="member-list">
-<li>
-<section class="detail" id="LOOP_PERIOD_SECONDS">
-<h3>LOOP_PERIOD_SECONDS</h3>
-<div class="member-signature"><span class="modifiers">static final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">LOOP_PERIOD_SECONDS</span></div>
-<div class="block">The nominal robot control-loop period in seconds, matching WPILib's 50&nbsp;Hz loop.</div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list">
-<li><a href="../../constant-values.html#frc.robot.Constants.LOOP_PERIOD_SECONDS">Constant Field Values</a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="NOMINAL_BATTERY_VOLTS">
-<h3>NOMINAL_BATTERY_VOLTS</h3>
-<div class="member-signature"><span class="modifiers">static final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">NOMINAL_BATTERY_VOLTS</span></div>
-<div class="block">The nominal battery voltage in volts, used to clamp motor outputs.</div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list">
-<li><a href="../../constant-values.html#frc.robot.Constants.NOMINAL_BATTERY_VOLTS">Constant Field Values</a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-</ul>
-</section>
-</li>
-</ul>
 </section>
 <!-- ========= END OF CLASS DATA ========= -->
 </main>

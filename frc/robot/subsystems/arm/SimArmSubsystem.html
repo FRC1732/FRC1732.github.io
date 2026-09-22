@@ -44,7 +44,7 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
@@ -72,77 +72,35 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">edu.wpi.first.wpilibj2.command.SubsystemBase
-<div class="inheritance"><a href="../SubsystemBase.html" title="class in frc.robot.subsystems">frc.robot.subsystems.SubsystemBase</a>
 <div class="inheritance"><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">frc.robot.subsystems.arm.AbstractArmSubsystem</a>
 <div class="inheritance">frc.robot.subsystems.arm.SimArmSubsystem</div>
-</div>
 </div>
 </div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code>edu.wpi.first.util.sendable.Sendable</code>, <code>edu.wpi.first.wpilibj2.command.Subsystem</code>, <code><a href="../Subsystem.html" title="interface in frc.robot.subsystems">Subsystem</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code>edu.wpi.first.util.sendable.Sendable</code>, <code>edu.wpi.first.wpilibj2.command.Subsystem</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">SimArmSubsystem</span>
 <span class="extends-implements">extends <a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></span></div>
-<div class="block">The arm implementation used in simulation, test runs, and CI.
+<div class="block">Arm subsystem backed by WPILib's <code>SingleJointedArmSim</code>.
 
- <p>This is a sibling of <a href="ArmSubsystem.html" title="class in frc.robot.subsystems.arm"><code>ArmSubsystem</code></a>, not a configuration of it. Both extend
- <a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm"><code>AbstractArmSubsystem</code></a> and therefore share the entire public API and control loop, but each supplies
- its own mechanism: the real one drives a motor controller, this one advances a WPILib
- <code>SingleJointedArmSim</code>. Nothing in the shared layer knows the difference.
-
- <p><b>Why a separate class rather than an IO behind the same subsystem.</b> A team reading
- <code>ArmSubsystem</code> should see only the code that runs on their robot; a robot should never ship a physics
- model. Splitting by class makes that structural instead of a convention, and it means the simulation can own
- state the real mechanism has no use for — the plant, its step, and its thread — without that leaking into the
- hardware path.
-
- <pre><code>
- // Robot code picks one once at startup:
- AbstractArmSubsystem arm = RobotBase.isReal()
-     ? new ArmSubsystem(...)
-     : new SimArmSubsystem(ArmHardware.CONSTANTS);
- </code></pre>
-
- <p><b>Why it wraps WPILib's model.</b> <code>SingleJointedArmSim</code> already models a DC motor, a gearbox,
- moment of inertia, and a gravity load, and it is the model every team's simulation is calibrated against.
- Reimplementing it would drift from real results and would have to be maintained. Following the <a href="https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/physics-sim.html">physics
- simulation guide</a>, the closed loop is a WPILib <code>PIDController</code> plus <code>ArmFeedforward</code>; only the
- plumbing between the library's units and WPILib's doubles lives here. The same computation is used by
- <a href="ArmSubsystem.html" title="class in frc.robot.subsystems.arm"><code>ArmSubsystem</code></a> for real hardware, so simulated and real mechanisms behave alike.
-
- <p><b>The gravity term is genuine.</b> <code>SingleJointedArmSim</code> takes the arm's length and mass and applies
- a real, angle-dependent gravity load, so a simulated arm sags if it is not held. That is why the feedforward
- matters and why the tests are meaningful.
-
- <p><b>Units.</b> WPILib's arm model measures angles in radians with zero horizontal. This library speaks
- rotations with the same zero reference, so the conversion is a single factor of <code>2&amp;pi;</code> and no offset. A
- hardware implementation that zeroes on a hard stop would apply its own offset instead.
-
- <h2>Two ways to run it</h2>
-
- <p><b>Real-time</b> — the default constructor starts a daemon thread that steps the plant every 20&nbsp;ms, so
- the arm moves by itself exactly as it would on a robot. This is what a full robot simulation wants.
-
- <p><b>Stepped</b> — <a href="#%3Cinit%3E(frc.robot.subsystems.arm.ArmConstants,boolean)"><code>SimArmSubsystem(ArmConstants, boolean)</code></a> with <code>false</code> leaves time frozen
- until <a href="#step(double)"><code>step(double)</code></a> is called. This is what tests want: two identical runs then produce
- bit-identical trajectories, with no wall clock involved, so a suite cannot become flaky.</div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list">
-<li><a href="ArmSubsystem.html" title="class in frc.robot.subsystems.arm"><code>ArmSubsystem</code></a></li>
-<li><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm"><code>AbstractArmSubsystem</code></a></li>
-<li><code>SingleJointedArmSim</code></li>
-</ul>
-</dd>
-</dl>
+ <p>The simulation motor is exposed through the same motor-controller abstraction used by the real
+ subsystem, so the shared control loop drives both implementations identically.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="inherited-list">
+<h3 id="fields-inherited-from-class-frc.robot.subsystems.arm.AbstractArmSubsystem">Fields inherited from class&nbsp;frc.robot.subsystems.arm.<a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></h3>
+<code><a href="AbstractArmSubsystem.html#encoder">encoder</a>, <a href="AbstractArmSubsystem.html#feedforward">feedforward</a>, <a href="AbstractArmSubsystem.html#lowerLimit">lowerLimit</a>, <a href="AbstractArmSubsystem.html#motor">motor</a>, <a href="AbstractArmSubsystem.html#pid">pid</a>, <a href="AbstractArmSubsystem.html#targetAngle">targetAngle</a>, <a href="AbstractArmSubsystem.html#upperLimit">upperLimit</a></code></div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -151,14 +109,19 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(frc.robot.subsystems.arm.ArmConstants)" class="member-name-link">SimArmSubsystem</a><wbr>(<a href="ArmConstants.html" title="class in frc.robot.subsystems.arm">ArmConstants</a>&nbsp;constants)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int,double,double,edu.wpi.first.math.controller.ProfiledPIDController,edu.wpi.first.math.controller.ArmFeedforward,edu.wpi.first.math.system.plant.DCMotor,double,double,double,boolean,double)" class="member-name-link">SimArmSubsystem</a><wbr>(int&nbsp;encoderID,
+ double&nbsp;lowerLimit,
+ double&nbsp;upperLimit,
+ edu.wpi.first.math.controller.ProfiledPIDController&nbsp;pid,
+ edu.wpi.first.math.controller.ArmFeedforward&nbsp;feedforward,
+ edu.wpi.first.math.system.plant.DCMotor&nbsp;simulationMotor,
+ double&nbsp;gearing,
+ double&nbsp;momentOfInertia,
+ double&nbsp;armLengthMeters,
+ boolean&nbsp;simulateGravity,
+ double&nbsp;startingAngleRadians)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Creates a simulated arm that advances itself in real time.</div>
-</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(frc.robot.subsystems.arm.ArmConstants,boolean)" class="member-name-link">SimArmSubsystem</a><wbr>(<a href="ArmConstants.html" title="class in frc.robot.subsystems.arm">ArmConstants</a>&nbsp;constants,
- boolean&nbsp;realTime)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Creates a simulated arm, choosing whether it advances itself.</div>
+<div class="block">Creates a simulated arm.</div>
 </div>
 </div>
 </section>
@@ -174,108 +137,28 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#closeImpl()" class="member-name-link">closeImpl</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.units.measure.MomentOfInertia</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMomentOfInertia()" class="member-name-link">getMomentOfInertia</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Releases the mechanism's IO.</div>
+<div class="block">Returns the configured arm moment of inertia.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#driveOpenLoop(double)" class="member-name-link">driveOpenLoop</a><wbr>(double&nbsp;velocityRotationsPerSecond)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.wpilibj.simulation.SingleJointedArmSim</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSim()" class="member-name-link">getSim</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Drives the arm open-loop at a velocity.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ArmConstants.html" title="class in frc.robot.subsystems.arm">ArmConstants</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConstants()" class="member-name-link">getConstants</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the mechanism description this subsystem was built from.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.units.measure.MomentOfInertia</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMomentOfInertia()" class="member-name-link">getMomentOfInertia</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the moment of inertia WPILib estimated for this arm.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.wpilibj.simulation.SingleJointedArmSim</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSim()" class="member-name-link">getSim</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the WPILib simulation behind this subsystem.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#holdAngle(edu.wpi.first.units.measure.Angle)" class="member-name-link">holdAngle</a><wbr>(edu.wpi.first.units.measure.Angle&nbsp;angle)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Drives the arm to hold <code>angle</code>.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReal()" class="member-name-link">isReal</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns whether this mechanism is driving real hardware.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#releaseOutput()" class="member-name-link">releaseOutput</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Stops commanding the mechanism.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected edu.wpi.first.units.measure.Angle</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sampleAngle()" class="member-name-link">sampleAngle</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the arm's current joint angle.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected double</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sampleAppliedVolts()" class="member-name-link">sampleAppliedVolts</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the voltage the motor is currently being driven with.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sampleAtLowerLimit()" class="member-name-link">sampleAtLowerLimit</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns whether the lower travel limit is currently tripped.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sampleAtUpperLimit()" class="member-name-link">sampleAtUpperLimit</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns whether the upper travel limit is currently tripped.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected edu.wpi.first.units.measure.AngularVelocity</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sampleVelocity()" class="member-name-link">sampleVelocity</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the arm's current angular velocity.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAngleForTesting(edu.wpi.first.units.measure.Angle)" class="member-name-link">setAngleForTesting</a><wbr>(edu.wpi.first.units.measure.Angle&nbsp;angle)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Forces the simulated arm to an angle, as if it had been moved by hand.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setGains(double,double,double)" class="member-name-link">setGains</a><wbr>(double&nbsp;kp,
- double&nbsp;ki,
- double&nbsp;kd)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Re-tunes the position loop at runtime.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#step(double)" class="member-name-link">step</a><wbr>(double&nbsp;dtSeconds)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Advances the simulated arm by one robot loop.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#zeroEncoder()" class="member-name-link">zeroEncoder</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Defines the current angle as the zero reference.</div>
+<div class="block">Returns the WPILib arm simulation.</div>
 </div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-frc.robot.subsystems.arm.AbstractArmSubsystem">Methods inherited from class&nbsp;frc.robot.subsystems.arm.<a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></h3>
-<code><a href="AbstractArmSubsystem.html#clampToTravel(edu.wpi.first.units.measure.Angle)">clampToTravel</a>, <a href="AbstractArmSubsystem.html#distanceToTarget()">distanceToTarget</a>, <a href="AbstractArmSubsystem.html#getAngle()">getAngle</a>, <a href="AbstractArmSubsystem.html#getLastAppliedVolts()">getLastAppliedVolts</a>, <a href="AbstractArmSubsystem.html#getName()">getName</a>, <a href="AbstractArmSubsystem.html#getTargetAngle()">getTargetAngle</a>, <a href="AbstractArmSubsystem.html#getVelocity()">getVelocity</a>, <a href="AbstractArmSubsystem.html#initSendable(edu.wpi.first.util.sendable.SendableBuilder)">initSendable</a>, <a href="AbstractArmSubsystem.html#isAngleAllowed(edu.wpi.first.units.measure.Angle)">isAngleAllowed</a>, <a href="AbstractArmSubsystem.html#isAtLowerLimit()">isAtLowerLimit</a>, <a href="AbstractArmSubsystem.html#isAtTargetAngle(edu.wpi.first.units.measure.Angle)">isAtTargetAngle</a>, <a href="AbstractArmSubsystem.html#isAtUpperLimit()">isAtUpperLimit</a>, <a href="AbstractArmSubsystem.html#isEnabled()">isEnabled</a>, <a href="AbstractArmSubsystem.html#periodicImpl()">periodicImpl</a>, <a href="AbstractArmSubsystem.html#sample()">sample</a>, <a href="AbstractArmSubsystem.html#setIdle()">setIdle</a>, <a href="AbstractArmSubsystem.html#setTargetAngle(edu.wpi.first.units.measure.Angle)">setTargetAngle</a>, <a href="AbstractArmSubsystem.html#stopImpl()">stopImpl</a>, <a href="AbstractArmSubsystem.html#zeroPosition()">zeroPosition</a></code></div>
-<div class="inherited-list">
-<h3 id="methods-inherited-from-class-frc.robot.subsystems.SubsystemBase">Methods inherited from class&nbsp;frc.robot.subsystems.<a href="../SubsystemBase.html" title="class in frc.robot.subsystems">SubsystemBase</a></h3>
-<code><a href="../SubsystemBase.html#afterPeriodic()">afterPeriodic</a>, <a href="../SubsystemBase.html#atGoal()">atGoal</a>, <a href="../SubsystemBase.html#beforePeriodic()">beforePeriodic</a>, <a href="../SubsystemBase.html#close()">close</a>, <a href="../SubsystemBase.html#isClosed()">isClosed</a>, <a href="../SubsystemBase.html#loopCount()">loopCount</a>, <a href="../SubsystemBase.html#periodic()">periodic</a>, <a href="../SubsystemBase.html#resetLoopCount()">resetLoopCount</a>, <a href="../SubsystemBase.html#sendable()">sendable</a>, <a href="../SubsystemBase.html#setGoalReached(boolean)">setGoalReached</a>, <a href="../SubsystemBase.html#stop()">stop</a>, <a href="../SubsystemBase.html#toString()">toString</a></code></div>
+<code><a href="AbstractArmSubsystem.html#close()">close</a>, <a href="AbstractArmSubsystem.html#distanceToTarget()">distanceToTarget</a>, <a href="AbstractArmSubsystem.html#getAngle()">getAngle</a>, <a href="AbstractArmSubsystem.html#getName()">getName</a>, <a href="AbstractArmSubsystem.html#getTargetAngle()">getTargetAngle</a>, <a href="AbstractArmSubsystem.html#getVelocity()">getVelocity</a>, <a href="AbstractArmSubsystem.html#initSendable(edu.wpi.first.util.sendable.SendableBuilder)">initSendable</a>, <a href="AbstractArmSubsystem.html#isAtLowerLimit()">isAtLowerLimit</a>, <a href="AbstractArmSubsystem.html#isAtUpperLimit()">isAtUpperLimit</a>, <a href="AbstractArmSubsystem.html#periodic()">periodic</a>, <a href="AbstractArmSubsystem.html#setGains(double,double,double)">setGains</a>, <a href="AbstractArmSubsystem.html#setTargetAngle(edu.wpi.first.units.measure.Angle)">setTargetAngle</a>, <a href="AbstractArmSubsystem.html#zeroPosition()">zeroPosition</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-edu.wpi.first.wpilibj2.command.SubsystemBase">Methods inherited from class&nbsp;edu.wpi.first.wpilibj2.command.SubsystemBase</h3>
 <code>addChild, getSubsystem, setName, setSubsystem</code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-edu.wpi.first.wpilibj2.command.Subsystem">Methods inherited from interface&nbsp;edu.wpi.first.wpilibj2.command.Subsystem</h3>
 <code>defer, getCurrentCommand, getDefaultCommand, idle, register, removeDefaultCommand, run, runEnd, runOnce, setDefaultCommand, simulationPeriodic, startEnd, startRun</code></div>
@@ -291,31 +174,33 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(frc.robot.subsystems.arm.ArmConstants)">
+<section class="detail" id="&lt;init&gt;(int,double,double,edu.wpi.first.math.controller.ProfiledPIDController,edu.wpi.first.math.controller.ArmFeedforward,edu.wpi.first.math.system.plant.DCMotor,double,double,double,boolean,double)">
 <h3>SimArmSubsystem</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SimArmSubsystem</span><wbr><span class="parameters">(<a href="ArmConstants.html" title="class in frc.robot.subsystems.arm">ArmConstants</a>&nbsp;constants)</span></div>
-<div class="block">Creates a simulated arm that advances itself in real time.
-
- <p>Use this for a full robot simulation, where nothing else is stepping the loop.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SimArmSubsystem</span><wbr><span class="parameters">(int&nbsp;encoderID,
+ double&nbsp;lowerLimit,
+ double&nbsp;upperLimit,
+ edu.wpi.first.math.controller.ProfiledPIDController&nbsp;pid,
+ edu.wpi.first.math.controller.ArmFeedforward&nbsp;feedforward,
+ edu.wpi.first.math.system.plant.DCMotor&nbsp;simulationMotor,
+ double&nbsp;gearing,
+ double&nbsp;momentOfInertia,
+ double&nbsp;armLengthMeters,
+ boolean&nbsp;simulateGravity,
+ double&nbsp;startingAngleRadians)</span></div>
+<div class="block">Creates a simulated arm.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>constants</code> - the physical description of the mechanism</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="&lt;init&gt;(frc.robot.subsystems.arm.ArmConstants,boolean)">
-<h3>SimArmSubsystem</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SimArmSubsystem</span><wbr><span class="parameters">(<a href="ArmConstants.html" title="class in frc.robot.subsystems.arm">ArmConstants</a>&nbsp;constants,
- boolean&nbsp;realTime)</span></div>
-<div class="block">Creates a simulated arm, choosing whether it advances itself.
-
- <p>Passing <code>false</code> is what makes a test deterministic: the plant only moves when the test calls
- <a href="#step(double)"><code>step(double)</code></a>.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>constants</code> - the physical description of the mechanism</dd>
-<dd><code>realTime</code> - <code>true</code> to step in the background, <code>false</code> to step on demand</dd>
+<dd><code>encoderID</code> - CAN ID used by the simulated CANcoder</dd>
+<dd><code>lowerLimit</code> - lower arm limit in rotations</dd>
+<dd><code>upperLimit</code> - upper arm limit in rotations</dd>
+<dd><code>pid</code> - injected profiled PID controller</dd>
+<dd><code>feedforward</code> - injected arm feedforward controller</dd>
+<dd><code>simulationMotor</code> - motor model used by the plant</dd>
+<dd><code>gearing</code> - motor-to-joint reduction</dd>
+<dd><code>momentOfInertia</code> - arm moment of inertia in kilogram square meters</dd>
+<dd><code>armLengthMeters</code> - arm length in meters</dd>
+<dd><code>simulateGravity</code> - whether to include gravity</dd>
+<dd><code>startingAngleRadians</code> - initial arm angle in radians</dd>
 </dl>
 </section>
 </li>
@@ -328,200 +213,13 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="sampleAngle()">
-<h3>sampleAngle</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">edu.wpi.first.units.measure.Angle</span>&nbsp;<span class="element-name">sampleAngle</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractArmSubsystem.html#sampleAngle()">AbstractArmSubsystem</a></code></span></div>
-<div class="block">Returns the arm's current joint angle.
-
- <p>Implementations supply this from their own sensor — an encoder for hardware, the plant for a simulation.
- The shared layer calls it rather than caching a value, so a logger or a test always sees the live reading.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractArmSubsystem.html#sampleAngle()">sampleAngle</a></code>&nbsp;in class&nbsp;<code><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></code></dd>
-<dt>Returns:</dt>
-<dd>the current joint angle</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="sampleVelocity()">
-<h3>sampleVelocity</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">edu.wpi.first.units.measure.AngularVelocity</span>&nbsp;<span class="element-name">sampleVelocity</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractArmSubsystem.html#sampleVelocity()">AbstractArmSubsystem</a></code></span></div>
-<div class="block">Returns the arm's current angular velocity.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractArmSubsystem.html#sampleVelocity()">sampleVelocity</a></code>&nbsp;in class&nbsp;<code><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></code></dd>
-<dt>Returns:</dt>
-<dd>the angular velocity</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="sampleAtLowerLimit()">
-<h3>sampleAtLowerLimit</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">sampleAtLowerLimit</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractArmSubsystem.html#sampleAtLowerLimit()">AbstractArmSubsystem</a></code></span></div>
-<div class="block">Returns whether the lower travel limit is currently tripped.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractArmSubsystem.html#sampleAtLowerLimit()">sampleAtLowerLimit</a></code>&nbsp;in class&nbsp;<code><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></code></dd>
-<dt>Returns:</dt>
-<dd><code>true</code> if the lower limit switch is active</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="sampleAtUpperLimit()">
-<h3>sampleAtUpperLimit</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">sampleAtUpperLimit</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractArmSubsystem.html#sampleAtUpperLimit()">AbstractArmSubsystem</a></code></span></div>
-<div class="block">Returns whether the upper travel limit is currently tripped.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractArmSubsystem.html#sampleAtUpperLimit()">sampleAtUpperLimit</a></code>&nbsp;in class&nbsp;<code><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></code></dd>
-<dt>Returns:</dt>
-<dd><code>true</code> if the upper limit switch is active</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="sampleAppliedVolts()">
-<h3>sampleAppliedVolts</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">sampleAppliedVolts</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractArmSubsystem.html#sampleAppliedVolts()">AbstractArmSubsystem</a></code></span></div>
-<div class="block">Returns the voltage the motor is currently being driven with.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractArmSubsystem.html#sampleAppliedVolts()">sampleAppliedVolts</a></code>&nbsp;in class&nbsp;<code><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></code></dd>
-<dt>Returns:</dt>
-<dd>the applied voltage in volts</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="holdAngle(edu.wpi.first.units.measure.Angle)">
-<h3>holdAngle</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">holdAngle</span><wbr><span class="parameters">(edu.wpi.first.units.measure.Angle&nbsp;angle)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractArmSubsystem.html#holdAngle(edu.wpi.first.units.measure.Angle)">AbstractArmSubsystem</a></code></span></div>
-<div class="block">Drives the arm to hold <code>angle</code>.
-
- <p>Called once per loop while the mechanism is enabled. Implementations close the loop however suits their
- hardware: a vendor motor controller's onboard position control, or a WPILib
- <code>PIDController</code> plus feedforward, as <a href="ArmSubsystem.html" title="class in frc.robot.subsystems.arm"><code>ArmSubsystem</code></a> and
- <a href="SimArmSubsystem.html" title="class in frc.robot.subsystems.arm"><code>SimArmSubsystem</code></a> both do.
-
- <p><code>angle</code> is already clamped to the travel range, so implementations need not re-validate it.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractArmSubsystem.html#holdAngle(edu.wpi.first.units.measure.Angle)">holdAngle</a></code>&nbsp;in class&nbsp;<code><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></code></dd>
-<dt>Parameters:</dt>
-<dd><code>angle</code> - the angle to hold, measured from the zero position</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="driveOpenLoop(double)">
-<h3>driveOpenLoop</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">driveOpenLoop</span><wbr><span class="parameters">(double&nbsp;velocityRotationsPerSecond)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractArmSubsystem.html#driveOpenLoop(double)">AbstractArmSubsystem</a></code></span></div>
-<div class="block">Drives the arm open-loop at a velocity.
-
- <p>Not reached from any command in this API; it exists so a subclass can build a calibration routine —
- drive into the lower stop until <a href="AbstractArmSubsystem.html#isAtLowerLimit()"><code>AbstractArmSubsystem.isAtLowerLimit()</code></a> trips, then <a href="AbstractArmSubsystem.html#zeroPosition()"><code>AbstractArmSubsystem.zeroPosition()</code></a> — without
- reaching around the abstraction for raw voltage.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractArmSubsystem.html#driveOpenLoop(double)">driveOpenLoop</a></code>&nbsp;in class&nbsp;<code><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></code></dd>
-<dt>Parameters:</dt>
-<dd><code>velocityRotationsPerSecond</code> - the velocity to drive at, positive raising the arm</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="releaseOutput()">
-<h3>releaseOutput</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">releaseOutput</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractArmSubsystem.html#releaseOutput()">AbstractArmSubsystem</a></code></span></div>
-<div class="block">Stops commanding the mechanism.
-
- <p>Called while idle and on <a href="../SubsystemBase.html#stop()"><code>SubsystemBase.stop()</code></a>. Whether the arm then holds or sags is the hardware's brake
- mode, not a decision this method makes.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractArmSubsystem.html#releaseOutput()">releaseOutput</a></code>&nbsp;in class&nbsp;<code><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="zeroEncoder()">
-<h3>zeroEncoder</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">zeroEncoder</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractArmSubsystem.html#zeroEncoder()">AbstractArmSubsystem</a></code></span></div>
-<div class="block">Defines the current angle as the zero reference.
-
- <p>Called by <a href="AbstractArmSubsystem.html#zeroPosition()"><code>AbstractArmSubsystem.zeroPosition()</code></a>. Implementations should reset both the sensor and any internal
- setpoint.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractArmSubsystem.html#zeroEncoder()">zeroEncoder</a></code>&nbsp;in class&nbsp;<code><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="step(double)">
-<h3>step</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">step</span><wbr><span class="parameters">(double&nbsp;dtSeconds)</span></div>
-<div class="block">Advances the simulated arm by one robot loop.
-
- <p>The plant only moves when this is called, which is what makes a stepping test reproducible. Call it
- after <a href="../SubsystemBase.html#periodic()"><code>SubsystemBase.periodic()</code></a>, so the mechanism responds to this loop's command rather than the previous one's.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>dtSeconds</code> - the timestep to integrate, in seconds</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="isReal()">
-<h3>isReal</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isReal</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../Subsystem.html#isReal()">Subsystem</a></code></span></div>
-<div class="block">Returns whether this mechanism is driving real hardware.
-
- <p>Callers use this to skip hardware-only work, and tests use it to skip assertions that only
- make sense against real motors. A simulated implementation returns <code>false</code>.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd><code>true</code> for real hardware, <code>false</code> for a simulated implementation</dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="getSim()">
 <h3>getSim</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.wpilibj.simulation.SingleJointedArmSim</span>&nbsp;<span class="element-name">getSim</span>()</div>
-<div class="block">Returns the WPILib simulation behind this subsystem.
-
- <p>Provided so a test or a full robot simulation can read the underlying model directly — for example to
- wire it into a <code>Mechanism2d</code> visualisation or assert on the raw plant state.</div>
+<div class="block">Returns the WPILib arm simulation.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the <code>SingleJointedArmSim</code> this subsystem advances</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getConstants()">
-<h3>getConstants</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ArmConstants.html" title="class in frc.robot.subsystems.arm">ArmConstants</a></span>&nbsp;<span class="element-name">getConstants</span>()</div>
-<div class="block">Returns the mechanism description this subsystem was built from.</div>
-<dl class="notes">
-<dt>Overrides:</dt>
-<dd><code><a href="AbstractArmSubsystem.html#getConstants()">getConstants</a></code>&nbsp;in class&nbsp;<code><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></code></dd>
-<dt>Returns:</dt>
-<dd>the constants passed to the constructor</dd>
+<dd>arm simulation model</dd>
 </dl>
 </section>
 </li>
@@ -529,54 +227,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getMomentOfInertia()">
 <h3>getMomentOfInertia</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.units.measure.MomentOfInertia</span>&nbsp;<span class="element-name">getMomentOfInertia</span>()</div>
-<div class="block">Returns the moment of inertia WPILib estimated for this arm.</div>
+<div class="block">Returns the configured arm moment of inertia.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the inertia</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="setGains(double,double,double)">
-<h3>setGains</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setGains</span><wbr><span class="parameters">(double&nbsp;kp,
- double&nbsp;ki,
- double&nbsp;kd)</span></div>
-<div class="block">Re-tunes the position loop at runtime.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>kp</code> - proportional gain, in volts per radian of error</dd>
-<dd><code>ki</code> - integral gain, in volts per radian-second of accumulated error</dd>
-<dd><code>kd</code> - derivative gain, in volts per radian per second of velocity</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="setAngleForTesting(edu.wpi.first.units.measure.Angle)">
-<h3>setAngleForTesting</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setAngleForTesting</span><wbr><span class="parameters">(edu.wpi.first.units.measure.Angle&nbsp;angle)</span></div>
-<div class="block">Forces the simulated arm to an angle, as if it had been moved by hand.
-
- <p>Lets a test start from an arbitrary pose rather than flying the mechanism there, which keeps tests
- faster and their intent clearer.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>angle</code> - the angle to jump to</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="closeImpl()">
-<h3>closeImpl</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">closeImpl</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="../SubsystemBase.html#closeImpl()">SubsystemBase</a></code></span></div>
-<div class="block">Releases the mechanism's IO.
-
- <p>Called once, after <a href="../SubsystemBase.html#stopImpl()"><code>SubsystemBase.stopImpl()</code></a>. Implementations should tolerate being handed an IO
- that is already closed.</div>
-<dl class="notes">
-<dt>Overrides:</dt>
-<dd><code><a href="AbstractArmSubsystem.html#closeImpl()">closeImpl</a></code>&nbsp;in class&nbsp;<code><a href="AbstractArmSubsystem.html" title="class in frc.robot.subsystems.arm">AbstractArmSubsystem</a></code></dd>
+<dd>moment of inertia</dd>
 </dl>
 </section>
 </li>

@@ -44,7 +44,7 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
@@ -72,72 +72,35 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">edu.wpi.first.wpilibj2.command.SubsystemBase
-<div class="inheritance"><a href="../SubsystemBase.html" title="class in frc.robot.subsystems">frc.robot.subsystems.SubsystemBase</a>
 <div class="inheritance"><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">frc.robot.subsystems.elevator.AbstractElevatorSubsystem</a>
 <div class="inheritance">frc.robot.subsystems.elevator.SimElevatorSubsystem</div>
-</div>
 </div>
 </div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code>edu.wpi.first.util.sendable.Sendable</code>, <code>edu.wpi.first.wpilibj2.command.Subsystem</code>, <code><a href="../Subsystem.html" title="interface in frc.robot.subsystems">Subsystem</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code>edu.wpi.first.util.sendable.Sendable</code>, <code>edu.wpi.first.wpilibj2.command.Subsystem</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">SimElevatorSubsystem</span>
 <span class="extends-implements">extends <a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></span></div>
-<div class="block">The elevator implementation used in simulation, test runs, and CI.
+<div class="block">Elevator subsystem backed by WPILib's <code>ElevatorSim</code>.
 
- <p>This is a sibling of <a href="ElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator"><code>ElevatorSubsystem</code></a>, not a configuration of it. Both extend
- <a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator"><code>AbstractElevatorSubsystem</code></a> and therefore share the entire public API and control loop, but each
- supplies its own mechanism: the real one drives motor controllers, this one advances a WPILib
- <code>ElevatorSim</code>. Nothing in the shared layer knows the difference.
-
- <p><b>Why a separate class rather than an IO behind the same subsystem.</b> A team reading
- <code>ElevatorSubsystem</code> should see only the code that runs on their robot; a robot should never ship
- a physics model. Splitting by class makes that structural instead of a convention, and it means the
- simulation can own state the real mechanism has no use for — the plant, its step, and its thread —
- without that leaking into the hardware path.
-
- <pre><code>
- // Robot code picks one once at startup:
- AbstractElevatorSubsystem elevator = RobotBase.isReal()
-     ? new ElevatorSubsystem(...)
-     : new SimElevatorSubsystem(ElevatorHardware.CONSTANTS);
- </code></pre>
-
- <p><b>Why it wraps WPILib's model.</b> <code>ElevatorSim</code> already models a DC motor, a gearbox, a
- drum, and a gravity load, and it is the model every team's simulation is calibrated against.
- Reimplementing it would drift from real results and would have to be maintained. Following the
- <a href="https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/physics-sim.html">physics
- simulation guide</a>, the closed loop is a WPILib <code>PIDController</code> plus
- <code>ElevatorFeedforward</code>; only the plumbing between the library's units and WPILib's doubles lives
- here. The same computation is used by <a href="ElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator"><code>ElevatorSubsystem</code></a> for real hardware, so simulated and
- real mechanisms behave alike.
-
- <h2>Two ways to run it</h2>
-
- <p><b>Real-time</b> — the default constructor starts a daemon thread that steps the plant every
- 20&nbsp;ms, so the mechanism moves by itself exactly as it would on a robot. This is what a full robot
- simulation wants.
-
- <p><b>Stepped</b> — <a href="#%3Cinit%3E(frc.robot.subsystems.elevator.ElevatorConstants,boolean)"><code>SimElevatorSubsystem(ElevatorConstants, boolean)</code></a> with <code>false</code> leaves
- time frozen until <a href="#step(double)"><code>step(double)</code></a> is called. This is what tests want: two identical runs then
- produce bit-identical trajectories, with no wall clock involved, so a suite cannot become flaky.</div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list">
-<li><a href="ElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator"><code>ElevatorSubsystem</code></a></li>
-<li><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator"><code>AbstractElevatorSubsystem</code></a></li>
-<li><code>ElevatorSim</code></li>
-</ul>
-</dd>
-</dl>
+ <p>The simulation motor is adapted to the same motor-controller interface used by the real
+ elevator, allowing the shared control loop to drive either implementation.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="inherited-list">
+<h3 id="fields-inherited-from-class-frc.robot.subsystems.elevator.AbstractElevatorSubsystem">Fields inherited from class&nbsp;frc.robot.subsystems.elevator.<a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></h3>
+<code><a href="AbstractElevatorSubsystem.html#feedforward">feedforward</a>, <a href="AbstractElevatorSubsystem.html#lowerLimit">lowerLimit</a>, <a href="AbstractElevatorSubsystem.html#motor">motor</a>, <a href="AbstractElevatorSubsystem.html#pid">pid</a>, <a href="AbstractElevatorSubsystem.html#targetHeight">targetHeight</a>, <a href="AbstractElevatorSubsystem.html#upperLimit">upperLimit</a></code></div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -146,14 +109,19 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(frc.robot.subsystems.elevator.ElevatorConstants)" class="member-name-link">SimElevatorSubsystem</a><wbr>(<a href="ElevatorConstants.html" title="class in frc.robot.subsystems.elevator">ElevatorConstants</a>&nbsp;constants)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(edu.wpi.first.math.system.plant.DCMotor,edu.wpi.first.math.controller.PIDController,edu.wpi.first.math.controller.ElevatorFeedforward,double,double,double,double,double,double,boolean,double)" class="member-name-link">SimElevatorSubsystem</a><wbr>(edu.wpi.first.math.system.plant.DCMotor&nbsp;simulationMotor,
+ edu.wpi.first.math.controller.PIDController&nbsp;pid,
+ edu.wpi.first.math.controller.ElevatorFeedforward&nbsp;feedforward,
+ double&nbsp;gearing,
+ double&nbsp;drumRadiusMeters,
+ double&nbsp;carriageMassKilograms,
+ double&nbsp;lowerLimit,
+ double&nbsp;upperLimit,
+ double&nbsp;startingHeight,
+ boolean&nbsp;simulateGravity,
+ double&nbsp;goalTolerance)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Creates a simulated elevator that advances itself in real time.</div>
-</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(frc.robot.subsystems.elevator.ElevatorConstants,boolean)" class="member-name-link">SimElevatorSubsystem</a><wbr>(<a href="ElevatorConstants.html" title="class in frc.robot.subsystems.elevator">ElevatorConstants</a>&nbsp;constants,
- boolean&nbsp;realTime)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Creates a simulated elevator, choosing whether it advances itself.</div>
+<div class="block">Creates a simulated elevator.</div>
 </div>
 </div>
 </section>
@@ -169,109 +137,28 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#closeImpl()" class="member-name-link">closeImpl</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Releases the mechanism's IO.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#driveOpenLoop(double)" class="member-name-link">driveOpenLoop</a><wbr>(double&nbsp;velocityMetersPerSecond)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Drives the carriage open-loop at a velocity.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ElevatorConstants.html" title="class in frc.robot.subsystems.elevator">ElevatorConstants</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConstants()" class="member-name-link">getConstants</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the mechanism description this subsystem was built from.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKgVolts()" class="member-name-link">getKgVolts</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the gravity feedforward the loop applies.</div>
-</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.wpilibj.simulation.ElevatorSim</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSim()" class="member-name-link">getSim</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the WPILib simulation behind this subsystem.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#holdPosition(edu.wpi.first.units.measure.Distance)" class="member-name-link">holdPosition</a><wbr>(edu.wpi.first.units.measure.Distance&nbsp;position)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">/**
- Drives the carriage to hold <code>position</code>.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReal()" class="member-name-link">isReal</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns whether this mechanism is driving real hardware.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#releaseOutput()" class="member-name-link">releaseOutput</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Stops commanding the mechanism.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected double</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sampleAppliedVolts()" class="member-name-link">sampleAppliedVolts</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the voltage the motors are currently being driven with.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sampleAtLowerLimit()" class="member-name-link">sampleAtLowerLimit</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns whether the lower travel limit is currently tripped.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sampleAtUpperLimit()" class="member-name-link">sampleAtUpperLimit</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns whether the upper travel limit is currently tripped.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected edu.wpi.first.units.measure.Distance</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#samplePosition()" class="member-name-link">samplePosition</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the carriage's current height.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected edu.wpi.first.units.measure.LinearVelocity</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sampleVelocity()" class="member-name-link">sampleVelocity</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the carriage's current velocity.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setGains(double,double,double)" class="member-name-link">setGains</a><wbr>(double&nbsp;kp,
- double&nbsp;ki,
- double&nbsp;kd)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Re-tunes the position loop at runtime.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPositionForTesting(edu.wpi.first.units.measure.Distance)" class="member-name-link">setPositionForTesting</a><wbr>(edu.wpi.first.units.measure.Distance&nbsp;position)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Forces the simulated carriage to a height, as if it had been moved by hand.</div>
+<div class="block">Returns the WPILib elevator simulation.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#step(double)" class="member-name-link">step</a><wbr>(double&nbsp;dtSeconds)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Advances the simulated carriage by one robot loop.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#zeroEncoder()" class="member-name-link">zeroEncoder</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Defines the current position as the zero reference.</div>
+<div class="block">Advances the elevator simulation by one timestep.</div>
 </div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-frc.robot.subsystems.elevator.AbstractElevatorSubsystem">Methods inherited from class&nbsp;frc.robot.subsystems.elevator.<a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></h3>
-<code><a href="AbstractElevatorSubsystem.html#clampToTravel(edu.wpi.first.units.measure.Distance)">clampToTravel</a>, <a href="AbstractElevatorSubsystem.html#distanceToTarget()">distanceToTarget</a>, <a href="AbstractElevatorSubsystem.html#getLastAppliedVolts()">getLastAppliedVolts</a>, <a href="AbstractElevatorSubsystem.html#getName()">getName</a>, <a href="AbstractElevatorSubsystem.html#getPosition()">getPosition</a>, <a href="AbstractElevatorSubsystem.html#getTargetHeight()">getTargetHeight</a>, <a href="AbstractElevatorSubsystem.html#getVelocity()">getVelocity</a>, <a href="AbstractElevatorSubsystem.html#initSendable(edu.wpi.first.util.sendable.SendableBuilder)">initSendable</a>, <a href="AbstractElevatorSubsystem.html#isAtLowerLimit()">isAtLowerLimit</a>, <a href="AbstractElevatorSubsystem.html#isAtTargetHeight(edu.wpi.first.units.measure.Distance)">isAtTargetHeight</a>, <a href="AbstractElevatorSubsystem.html#isAtUpperLimit()">isAtUpperLimit</a>, <a href="AbstractElevatorSubsystem.html#isEnabled()">isEnabled</a>, <a href="AbstractElevatorSubsystem.html#isHeightAllowed(edu.wpi.first.units.measure.Distance)">isHeightAllowed</a>, <a href="AbstractElevatorSubsystem.html#periodicImpl()">periodicImpl</a>, <a href="AbstractElevatorSubsystem.html#sample()">sample</a>, <a href="AbstractElevatorSubsystem.html#setIdle()">setIdle</a>, <a href="AbstractElevatorSubsystem.html#setTargetHeight(edu.wpi.first.units.measure.Distance)">setTargetHeight</a>, <a href="AbstractElevatorSubsystem.html#stopImpl()">stopImpl</a>, <a href="AbstractElevatorSubsystem.html#zeroPosition()">zeroPosition</a></code></div>
-<div class="inherited-list">
-<h3 id="methods-inherited-from-class-frc.robot.subsystems.SubsystemBase">Methods inherited from class&nbsp;frc.robot.subsystems.<a href="../SubsystemBase.html" title="class in frc.robot.subsystems">SubsystemBase</a></h3>
-<code><a href="../SubsystemBase.html#afterPeriodic()">afterPeriodic</a>, <a href="../SubsystemBase.html#atGoal()">atGoal</a>, <a href="../SubsystemBase.html#beforePeriodic()">beforePeriodic</a>, <a href="../SubsystemBase.html#close()">close</a>, <a href="../SubsystemBase.html#isClosed()">isClosed</a>, <a href="../SubsystemBase.html#loopCount()">loopCount</a>, <a href="../SubsystemBase.html#periodic()">periodic</a>, <a href="../SubsystemBase.html#resetLoopCount()">resetLoopCount</a>, <a href="../SubsystemBase.html#sendable()">sendable</a>, <a href="../SubsystemBase.html#setGoalReached(boolean)">setGoalReached</a>, <a href="../SubsystemBase.html#stop()">stop</a>, <a href="../SubsystemBase.html#toString()">toString</a></code></div>
+<code><a href="AbstractElevatorSubsystem.html#close()">close</a>, <a href="AbstractElevatorSubsystem.html#distanceToTarget()">distanceToTarget</a>, <a href="AbstractElevatorSubsystem.html#getName()">getName</a>, <a href="AbstractElevatorSubsystem.html#getPosition()">getPosition</a>, <a href="AbstractElevatorSubsystem.html#getTargetHeight()">getTargetHeight</a>, <a href="AbstractElevatorSubsystem.html#getVelocity()">getVelocity</a>, <a href="AbstractElevatorSubsystem.html#initSendable(edu.wpi.first.util.sendable.SendableBuilder)">initSendable</a>, <a href="AbstractElevatorSubsystem.html#isAtLowerLimit()">isAtLowerLimit</a>, <a href="AbstractElevatorSubsystem.html#isAtTargetHeight(edu.wpi.first.units.measure.Distance)">isAtTargetHeight</a>, <a href="AbstractElevatorSubsystem.html#isAtUpperLimit()">isAtUpperLimit</a>, <a href="AbstractElevatorSubsystem.html#periodic()">periodic</a>, <a href="AbstractElevatorSubsystem.html#setGains(double,double,double)">setGains</a>, <a href="AbstractElevatorSubsystem.html#setTargetHeight(edu.wpi.first.units.measure.Distance)">setTargetHeight</a>, <a href="AbstractElevatorSubsystem.html#zeroPosition()">zeroPosition</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-edu.wpi.first.wpilibj2.command.SubsystemBase">Methods inherited from class&nbsp;edu.wpi.first.wpilibj2.command.SubsystemBase</h3>
 <code>addChild, getSubsystem, setName, setSubsystem</code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-edu.wpi.first.wpilibj2.command.Subsystem">Methods inherited from interface&nbsp;edu.wpi.first.wpilibj2.command.Subsystem</h3>
 <code>defer, getCurrentCommand, getDefaultCommand, idle, register, removeDefaultCommand, run, runEnd, runOnce, setDefaultCommand, simulationPeriodic, startEnd, startRun</code></div>
@@ -287,31 +174,33 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(frc.robot.subsystems.elevator.ElevatorConstants)">
+<section class="detail" id="&lt;init&gt;(edu.wpi.first.math.system.plant.DCMotor,edu.wpi.first.math.controller.PIDController,edu.wpi.first.math.controller.ElevatorFeedforward,double,double,double,double,double,double,boolean,double)">
 <h3>SimElevatorSubsystem</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SimElevatorSubsystem</span><wbr><span class="parameters">(<a href="ElevatorConstants.html" title="class in frc.robot.subsystems.elevator">ElevatorConstants</a>&nbsp;constants)</span></div>
-<div class="block">Creates a simulated elevator that advances itself in real time.
-
- <p>Use this for a full robot simulation, where nothing else is stepping the loop.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SimElevatorSubsystem</span><wbr><span class="parameters">(edu.wpi.first.math.system.plant.DCMotor&nbsp;simulationMotor,
+ edu.wpi.first.math.controller.PIDController&nbsp;pid,
+ edu.wpi.first.math.controller.ElevatorFeedforward&nbsp;feedforward,
+ double&nbsp;gearing,
+ double&nbsp;drumRadiusMeters,
+ double&nbsp;carriageMassKilograms,
+ double&nbsp;lowerLimit,
+ double&nbsp;upperLimit,
+ double&nbsp;startingHeight,
+ boolean&nbsp;simulateGravity,
+ double&nbsp;goalTolerance)</span></div>
+<div class="block">Creates a simulated elevator.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>constants</code> - the physical description of the mechanism</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="&lt;init&gt;(frc.robot.subsystems.elevator.ElevatorConstants,boolean)">
-<h3>SimElevatorSubsystem</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SimElevatorSubsystem</span><wbr><span class="parameters">(<a href="ElevatorConstants.html" title="class in frc.robot.subsystems.elevator">ElevatorConstants</a>&nbsp;constants,
- boolean&nbsp;realTime)</span></div>
-<div class="block">Creates a simulated elevator, choosing whether it advances itself.
-
- <p>Passing <code>false</code> is what makes a test deterministic: the plant only moves when the test calls
- <a href="#step(double)"><code>step(double)</code></a>.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>constants</code> - the physical description of the mechanism</dd>
-<dd><code>realTime</code> - <code>true</code> to step in the background, <code>false</code> to step on demand</dd>
+<dd><code>simulationMotor</code> - motor model used by the plant</dd>
+<dd><code>pid</code> - injected position controller</dd>
+<dd><code>feedforward</code> - injected elevator feedforward controller</dd>
+<dd><code>gearing</code> - motor-to-drum reduction</dd>
+<dd><code>drumRadiusMeters</code> - drum radius in meters</dd>
+<dd><code>carriageMassKilograms</code> - carriage mass in kilograms</dd>
+<dd><code>lowerLimit</code> - lower travel limit in meters</dd>
+<dd><code>upperLimit</code> - upper travel limit in meters</dd>
+<dd><code>startingHeight</code> - initial elevator height in meters</dd>
+<dd><code>simulateGravity</code> - whether to include gravity</dd>
+<dd><code>goalTolerance</code> - target tolerance in meters</dd>
 </dl>
 </section>
 </li>
@@ -324,146 +213,13 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="samplePosition()">
-<h3>samplePosition</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">edu.wpi.first.units.measure.Distance</span>&nbsp;<span class="element-name">samplePosition</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractElevatorSubsystem.html#samplePosition()">AbstractElevatorSubsystem</a></code></span></div>
-<div class="block">Returns the carriage's current height.
-
- <p>Implementations supply this from their own sensor — an encoder for hardware, the plant for a
- simulation. The shared layer calls it rather than caching a value, so a logger or a test always sees the
- live reading.</div>
+<section class="detail" id="getSim()">
+<h3>getSim</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.wpilibj.simulation.ElevatorSim</span>&nbsp;<span class="element-name">getSim</span>()</div>
+<div class="block">Returns the WPILib elevator simulation.</div>
 <dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractElevatorSubsystem.html#samplePosition()">samplePosition</a></code>&nbsp;in class&nbsp;<code><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></code></dd>
 <dt>Returns:</dt>
-<dd>the current height</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="sampleVelocity()">
-<h3>sampleVelocity</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">edu.wpi.first.units.measure.LinearVelocity</span>&nbsp;<span class="element-name">sampleVelocity</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractElevatorSubsystem.html#sampleVelocity()">AbstractElevatorSubsystem</a></code></span></div>
-<div class="block">Returns the carriage's current velocity.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractElevatorSubsystem.html#sampleVelocity()">sampleVelocity</a></code>&nbsp;in class&nbsp;<code><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></code></dd>
-<dt>Returns:</dt>
-<dd>the velocity</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="sampleAtLowerLimit()">
-<h3>sampleAtLowerLimit</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">sampleAtLowerLimit</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractElevatorSubsystem.html#sampleAtLowerLimit()">AbstractElevatorSubsystem</a></code></span></div>
-<div class="block">Returns whether the lower travel limit is currently tripped.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractElevatorSubsystem.html#sampleAtLowerLimit()">sampleAtLowerLimit</a></code>&nbsp;in class&nbsp;<code><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></code></dd>
-<dt>Returns:</dt>
-<dd><code>true</code> if the lower limit switch is active</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="sampleAtUpperLimit()">
-<h3>sampleAtUpperLimit</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">sampleAtUpperLimit</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractElevatorSubsystem.html#sampleAtUpperLimit()">AbstractElevatorSubsystem</a></code></span></div>
-<div class="block">Returns whether the upper travel limit is currently tripped.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractElevatorSubsystem.html#sampleAtUpperLimit()">sampleAtUpperLimit</a></code>&nbsp;in class&nbsp;<code><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></code></dd>
-<dt>Returns:</dt>
-<dd><code>true</code> if the upper limit switch is active</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="sampleAppliedVolts()">
-<h3>sampleAppliedVolts</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">sampleAppliedVolts</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractElevatorSubsystem.html#sampleAppliedVolts()">AbstractElevatorSubsystem</a></code></span></div>
-<div class="block">Returns the voltage the motors are currently being driven with.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractElevatorSubsystem.html#sampleAppliedVolts()">sampleAppliedVolts</a></code>&nbsp;in class&nbsp;<code><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></code></dd>
-<dt>Returns:</dt>
-<dd>the applied voltage in volts</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="holdPosition(edu.wpi.first.units.measure.Distance)">
-<h3>holdPosition</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">holdPosition</span><wbr><span class="parameters">(edu.wpi.first.units.measure.Distance&nbsp;position)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractElevatorSubsystem.html#holdPosition(edu.wpi.first.units.measure.Distance)">AbstractElevatorSubsystem</a></code></span></div>
-<div class="block">/**
- Drives the carriage to hold <code>position</code>.
-
- <p>Called once per loop while the mechanism is enabled. Implementations close the loop however suits
- their hardware: a vendor motor controller's onboard position control, or a WPILib
- <code>PIDController</code> plus feedforward, as <a href="ElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator"><code>ElevatorSubsystem</code></a> and
- <a href="SimElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator"><code>SimElevatorSubsystem</code></a> both do.
-
- <p><code>position</code> is already clamped to the travel range, so implementations need not re-validate it.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractElevatorSubsystem.html#holdPosition(edu.wpi.first.units.measure.Distance)">holdPosition</a></code>&nbsp;in class&nbsp;<code><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></code></dd>
-<dt>Parameters:</dt>
-<dd><code>position</code> - the height to hold, measured from the zero position</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="driveOpenLoop(double)">
-<h3>driveOpenLoop</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">driveOpenLoop</span><wbr><span class="parameters">(double&nbsp;velocityMetersPerSecond)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractElevatorSubsystem.html#driveOpenLoop(double)">AbstractElevatorSubsystem</a></code></span></div>
-<div class="block">Drives the carriage open-loop at a velocity.
-
- <p>Not reached from any command in this API; it exists so a subclass can build a homing routine — drive
- into the lower stop until <a href="AbstractElevatorSubsystem.html#isAtLowerLimit()"><code>AbstractElevatorSubsystem.isAtLowerLimit()</code></a> trips, then <a href="AbstractElevatorSubsystem.html#zeroPosition()"><code>AbstractElevatorSubsystem.zeroPosition()</code></a> — without
- reaching around the abstraction for raw voltage.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractElevatorSubsystem.html#driveOpenLoop(double)">driveOpenLoop</a></code>&nbsp;in class&nbsp;<code><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></code></dd>
-<dt>Parameters:</dt>
-<dd><code>velocityMetersPerSecond</code> - the velocity to drive at, positive raising the carriage</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="releaseOutput()">
-<h3>releaseOutput</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">releaseOutput</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractElevatorSubsystem.html#releaseOutput()">AbstractElevatorSubsystem</a></code></span></div>
-<div class="block">Stops commanding the mechanism.
-
- <p>Called while idle and on <a href="../SubsystemBase.html#stop()"><code>SubsystemBase.stop()</code></a>. Whether the carriage then holds or sags is the hardware's
- brake mode, not a decision this method makes.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractElevatorSubsystem.html#releaseOutput()">releaseOutput</a></code>&nbsp;in class&nbsp;<code><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="zeroEncoder()">
-<h3>zeroEncoder</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">zeroEncoder</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractElevatorSubsystem.html#zeroEncoder()">AbstractElevatorSubsystem</a></code></span></div>
-<div class="block">Defines the current position as the zero reference.
-
- <p>Called by <a href="AbstractElevatorSubsystem.html#zeroPosition()"><code>AbstractElevatorSubsystem.zeroPosition()</code></a>. Implementations should reset both the sensor and any internal
- setpoint.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="AbstractElevatorSubsystem.html#zeroEncoder()">zeroEncoder</a></code>&nbsp;in class&nbsp;<code><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></code></dd>
+<dd>elevator simulation model</dd>
 </dl>
 </section>
 </li>
@@ -471,111 +227,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="step(double)">
 <h3>step</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">step</span><wbr><span class="parameters">(double&nbsp;dtSeconds)</span></div>
-<div class="block">Advances the simulated carriage by one robot loop.
-
- <p>The plant only moves when this is called, which is what makes a stepping test reproducible. Call
- it after <a href="../SubsystemBase.html#periodic()"><code>SubsystemBase.periodic()</code></a>, so the mechanism responds to this loop's command rather than the
- previous one's.</div>
+<div class="block">Advances the elevator simulation by one timestep.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>dtSeconds</code> - the timestep to integrate, in seconds</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="isReal()">
-<h3>isReal</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isReal</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../Subsystem.html#isReal()">Subsystem</a></code></span></div>
-<div class="block">Returns whether this mechanism is driving real hardware.
-
- <p>Callers use this to skip hardware-only work, and tests use it to skip assertions that only
- make sense against real motors. A simulated implementation returns <code>false</code>.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd><code>true</code> for real hardware, <code>false</code> for a simulated implementation</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getSim()">
-<h3>getSim</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.wpilibj.simulation.ElevatorSim</span>&nbsp;<span class="element-name">getSim</span>()</div>
-<div class="block">Returns the WPILib simulation behind this subsystem.
-
- <p>Provided so a test or a full robot simulation can read the underlying model directly — for
- example to wire it into a <code>Mechanism2d</code> visualisation or assert on the raw plant state.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>the <code>ElevatorSim</code> this subsystem advances</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getConstants()">
-<h3>getConstants</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ElevatorConstants.html" title="class in frc.robot.subsystems.elevator">ElevatorConstants</a></span>&nbsp;<span class="element-name">getConstants</span>()</div>
-<div class="block">Returns the mechanism description this subsystem was built from.</div>
-<dl class="notes">
-<dt>Overrides:</dt>
-<dd><code><a href="AbstractElevatorSubsystem.html#getConstants()">getConstants</a></code>&nbsp;in class&nbsp;<code><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></code></dd>
-<dt>Returns:</dt>
-<dd>the constants passed to the constructor</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getKgVolts()">
-<h3>getKgVolts</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getKgVolts</span>()</div>
-<div class="block">Returns the gravity feedforward the loop applies.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>the gravity gain, in volts</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="setGains(double,double,double)">
-<h3>setGains</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setGains</span><wbr><span class="parameters">(double&nbsp;kp,
- double&nbsp;ki,
- double&nbsp;kd)</span></div>
-<div class="block">Re-tunes the position loop at runtime.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>kp</code> - proportional gain, in volts per meter of error</dd>
-<dd><code>ki</code> - integral gain, in volts per meter-second of accumulated error</dd>
-<dd><code>kd</code> - derivative gain, in volts per meter per second of velocity</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="setPositionForTesting(edu.wpi.first.units.measure.Distance)">
-<h3>setPositionForTesting</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPositionForTesting</span><wbr><span class="parameters">(edu.wpi.first.units.measure.Distance&nbsp;position)</span></div>
-<div class="block">Forces the simulated carriage to a height, as if it had been moved by hand.
-
- <p>Lets a test start from an arbitrary pose rather than flying the mechanism there, which keeps tests
- faster and their intent clearer.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>position</code> - the position to jump to</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="closeImpl()">
-<h3>closeImpl</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">closeImpl</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="../SubsystemBase.html#closeImpl()">SubsystemBase</a></code></span></div>
-<div class="block">Releases the mechanism's IO.
-
- <p>Called once, after <a href="../SubsystemBase.html#stopImpl()"><code>SubsystemBase.stopImpl()</code></a>. Implementations should tolerate being handed an IO
- that is already closed.</div>
-<dl class="notes">
-<dt>Overrides:</dt>
-<dd><code><a href="AbstractElevatorSubsystem.html#closeImpl()">closeImpl</a></code>&nbsp;in class&nbsp;<code><a href="AbstractElevatorSubsystem.html" title="class in frc.robot.subsystems.elevator">AbstractElevatorSubsystem</a></code></dd>
+<dd><code>dtSeconds</code> - timestep in seconds</dd>
 </dl>
 </section>
 </li>
